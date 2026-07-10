@@ -17,13 +17,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    bat '''
-                    sonar-scanner \
-                    -Dsonar.projectKey=nodeapp \
-                    -Dsonar.sources=. \
-                    -Dsonar.host.url=http://43.204.19.250:9000 \
-                    -Dsonar.login=TOKEN
-                    '''
+                    bat 'sonar-scanner -Dsonar.projectKey=nodeapp -Dsonar.sources=. -Dsonar.host.url=http://43.204.19.250:9000 -Dsonar.login=squ_001bfedbbd925ac25b479a4df36d7d9acb880cae'
                 }
             }
         }
