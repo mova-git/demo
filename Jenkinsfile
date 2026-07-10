@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-         jdk 'jdk25'
+         jdk 'jdk17'
     }
 
     stages {
@@ -17,7 +17,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh '''
+                    bat '''
                     sonar-scanner \
                     -Dsonar.projectKey=nodeapp \
                     -Dsonar.sources=. \
@@ -30,19 +30,19 @@ pipeline {
 
         stage('Trivy Scan') {
             steps {
-                sh 'trivy fs .'
+                bat 'trivy fs .'
             }
         }
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t node-app .'
+                bat 'docker build -t node-app .'
             }
         }
 
         stage('Docker Image Scan') {
             steps {
-                sh 'trivy image node-app'
+                bat 'trivy image node-app'
             }
         }
     }
