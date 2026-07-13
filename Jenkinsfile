@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        jdk 'jdk21'              // Change this to your JDK name in Jenkins
+        jdk 'jdk25'              // Match the JDK tool name configured in Jenkins
     }
 
     environment {
