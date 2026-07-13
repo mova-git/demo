@@ -2,7 +2,11 @@ pipeline {
     agent any
 
     tools {
-         jdk 'jdk25'
+        jdk 'jdk21'              // Change this to your JDK name in Jenkins
+    }
+
+    environment {
+        SCANNER_HOME = tool 'SonarScanner'   // Name configured in Manage Jenkins → Tools
     }
 
     stages {
@@ -10,14 +14,20 @@ pipeline {
         stage('Git Checkout') {
             steps {
                 git branch: 'main',
-                url: 'https://github.com/mova-git/demo.git'
+                    credentialsId: 'mova-git',
+                    url: 'https://github.com/mova-git/demo.git'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    bat 'sonar-scanner -Dsonar.projectKey=nodeapp -Dsonar.sources=. -Dsonar.host.url=http://43.204.19.250:9000 -Dsonar.login=squ_001bfedbbd925ac25b479a4df36d7d9acb880cae'
+                    bat """
+                    "%SCANNER_HOME%\\bin\\sonar-scanner.bat" ^
+                    -Dsonar.projectKey=squ_308be2f9f5474bc840f2f512e0ab393d2eba0b68 ^
+                    -Dsonar.sources=. ^
+                    -Dsonar.host.url=http://localhost:9000
+                    """
                 }
             }
         }
@@ -30,7 +40,7 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                bat 'docker build -t node-app .'
+                bat 'docker build -t demo .'
             }
         }
 
@@ -38,6 +48,16 @@ pipeline {
             steps {
                 bat 'trivy image node-app'
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+
+        failure {
+            echo 'Pipeline failed. Check Console Output.'
         }
     }
 }
