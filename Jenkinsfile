@@ -46,7 +46,7 @@ pipeline {
 
         stage('Docker Image Scan') {
             steps {
-                bat 'trivy image node-app'
+                bat 'trivy image demo'
             }
         }
     }
