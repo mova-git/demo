@@ -50,8 +50,8 @@ pipeline {
             }
         }
     }
-}
 
+    post {
         failure {
             echo 'Pipeline failed. Check Console Output.'
         }
