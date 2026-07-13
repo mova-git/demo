@@ -38,7 +38,7 @@ pipeline {
 
         stage('Trivy Scan') {
             steps {
-                bat 'trivy fs .'
+                bat '"C:\\Users\\Dell\\AppData\\Local\\Microsoft\\WinGet\\Packages\\AquaSecurity.Trivy_Microsoft.Winget.Source_8wekyb3d8bbwe\\trivy.exe" fs .'
             }
         }
 
@@ -50,7 +50,7 @@ pipeline {
 
         stage('Docker Image Scan') {
             steps {
-                bat 'trivy image demo'
+                bat '"C:\\Users\\Dell\\AppData\\Local\\Microsoft\\WinGet\\Packages\\AquaSecurity.Trivy_Microsoft.Winget.Source_8wekyb3d8bbwe\\trivy.exe" image demo'
             }
         }
     }
