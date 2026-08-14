@@ -2,60 +2,61 @@ pipeline {
     agent any
 
     tools {
-        jdk 'jdk25'              // Match the JDK tool name configured in Jenkins
+        jdk 'jdk25'
     }
 
     environment {
-        SCANNER_HOME = tool 'SonarScanner'   // Name configured in Manage Jenkins → Tools
+        SCANNER_HOME = tool 'SonarScanner'
     }
 
     stages {
 
         stage('Git Checkout') {
             steps {
-                git branch: 'main',
-                    credentialsId: 'mova-git',
+                git(
+                    branch: 'main',
+                    credentialsId: 'github-credentials',
                     url: 'https://github.com/mova-git/demo.git'
+                )
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                    withSonarQubeEnv('SonarQube') {
-                        bat """
-                        "%SCANNER_HOME%\\bin\\sonar-scanner.bat" ^
-                        -Dsonar.projectKey=demo ^
-                        -Dsonar.sources=. ^
-                        -Dsonar.host.url=http://localhost:9000 ^
-                        -Dsonar.login=admin ^
-                        -Dsonar.password=12345
-                        """
-                    }
+                withSonarQubeEnv('SonarQube') {
+                    sh '''
+                        $SCANNER_HOME/bin/sonar-scanner \
+                          -Dsonar.projectKey=demo \
+                          -Dsonar.sources=.
+                    '''
                 }
             }
         }
 
-        stage('Trivy Scan') {
+        stage('Trivy Filesystem Scan') {
             steps {
-                bat '"C:\\Users\\Dell\\AppData\\Local\\Microsoft\\WinGet\\Packages\\AquaSecurity.Trivy_Microsoft.Winget.Source_8wekyb3d8bbwe\\trivy.exe" fs .'
+                sh 'trivy fs .'
             }
         }
 
         stage('Docker Build') {
             steps {
-                bat 'docker build -t demo .'
+                sh 'docker build -t demo:latest .'
             }
         }
 
-        stage('Docker Image Scan') {
+        stage('Trivy Image Scan') {
             steps {
-                bat '"C:\\Users\\Dell\\AppData\\Local\\Microsoft\\WinGet\\Packages\\AquaSecurity.Trivy_Microsoft.Winget.Source_8wekyb3d8bbwe\\trivy.exe" image demo'
+                sh 'trivy image demo:latest'
             }
         }
     }
 
     post {
+        success {
+            echo 'Build, SonarQube and Trivy completed successfully.'
+        }
+
         failure {
             echo 'Pipeline failed. Check Console Output.'
         }
