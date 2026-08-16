@@ -85,12 +85,13 @@ pipeline {
 
         stage('Trivy Image Scan') {
             steps {
-                       sh '''
-            trivy image \
-              --severity HIGH,CRITICAL \
-              --exit-code 0 \
-              ${ECR_REPOSITORY}:${IMAGE_TAG}
-        '''
+                sh '''
+                    echo "Scanning Docker image with Trivy..."
+                    trivy image \
+                      --severity HIGH,CRITICAL \
+                      --exit-code 0 \
+                      ${ECR_REPOSITORY}:${IMAGE_TAG}
+                '''
             }
         }
 
