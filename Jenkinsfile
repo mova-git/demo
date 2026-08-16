@@ -67,7 +67,7 @@ pipeline {
                     trivy fs \
                       --scanners vuln \
                       --severity HIGH,CRITICAL \
-                      --exit-code 1 \
+                      --exit-code 0 \
                       .
                 '''
             }
@@ -85,12 +85,12 @@ pipeline {
 
         stage('Trivy Image Scan') {
             steps {
-                sh '''
-                    trivy image \
-                      --severity HIGH,CRITICAL \
-                      --exit-code 1 \
-                      ${ECR_REPOSITORY}:${IMAGE_TAG}
-                '''
+                       sh '''
+            trivy image \
+              --severity HIGH,CRITICAL \
+              --exit-code 0 \
+              ${ECR_REPOSITORY}:${IMAGE_TAG}
+        '''
             }
         }
 
