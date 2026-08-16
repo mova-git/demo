@@ -6,7 +6,8 @@ COPY package*.json ./
 
 RUN npm install
 
-COPY . .
+# Copy only app files needed at runtime while excluding common sensitive paths.
+COPY --chown=node:node . . --exclude=.git --exclude=node_modules --exclude=.env --exclude=.env.* --exclude=secrets
 
 EXPOSE 3000
 
