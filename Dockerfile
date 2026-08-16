@@ -7,7 +7,10 @@ COPY package*.json ./
 RUN npm install
 
 # Copy only app files needed at runtime while excluding common sensitive paths.
-COPY --chown=node:node . . --exclude=.git --exclude=node_modules --exclude=.env --exclude=.env.* --exclude=secrets
+COPY --chown=node:node --exclude=.git --exclude=node_modules --exclude=.env --exclude=.env.* --exclude=secrets --exclude=.dockerignore --exclude=Dockerfile . .
+
+# Run the application as a non-root user for safer container execution.
+USER node
 
 EXPOSE 3000
 
